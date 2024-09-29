@@ -1,0 +1,68 @@
+class Build:
+    def __init__(self, build_id, status, code_version):
+        self.build_id = build_id
+        self.status = status
+        self.code_version = code_version
+
+    def __repr__(self):
+        return f"Build(build_id={self.build_id}, status='{self.status}', code_version='{self.code_version}')"
+
+
+class CIManager:
+    def __init__(self):
+        self.builds = {}
+        self.next_build_id = 1
+
+    def create_build(self, code_version):
+        build_id = self.next_build_id
+        new_build = Build(build_id, 'Pending', code_version)
+        self.builds[build_id] = new_build
+        self.next_build_id += 1
+        return new_build
+
+    def update_build_status(self, build_id, new_status):
+        if build_id in self.builds:
+            self.builds[build_id].status = new_status
+            return self.builds[build_id]
+        else:
+            raise ValueError("Build ID not found.")
+
+    def get_build(self, build_id):
+        return self.builds.get(build_id, "Build ID not found.")
+
+    def delete_build(self, build_id):
+        if build_id in self.builds:
+            del self.builds[build_id]
+            return f"Build {build_id} deleted."
+        else:
+            raise ValueError("Build ID not found.")
+
+    def list_builds(self):
+        return list(self.builds.values())
+
+
+# Example usage
+if __name__ == "__main__":
+    ci_manager = CIManager()
+
+    # Create builds
+    build1 = ci_manager.create_build('v1.0.0')
+    build2 = ci_manager.create_build('v1.0.1')
+    print("Created Builds:")
+    print(ci_manager.list_builds())
+
+    # Update build status
+    ci_manager.update_build_status(build1.build_id, 'In Progress')
+    ci_manager.update_build_status(build2.build_id, 'Success')
+    print("\nUpdated Builds:")
+    print(ci_manager.list_builds())
+
+    # Get a specific build
+    print("\nGet Build ID 1:")
+    print(ci_manager.get_build(1))
+
+    # Delete a build
+    print("\nDeleting Build ID 1:")
+    print(ci_manager.delete_build(1))
+    print("\nRemaining Builds:")
+    print(ci_manager.list_builds())
